@@ -18,7 +18,7 @@ class CreateSmsHistoriesTable extends Migration
             $table->string('mobile_number');
             $table->string('message', 300);
             $table->string('mtid', 100)->nullable();
-            $table->integer('response_code')->nullable();
+            $table->string('response_code', 30)->nullable();
             $table->timestamps();
         });
     }
