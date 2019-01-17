@@ -5,7 +5,8 @@ use OneWaySMS\SmsHistory;
 
 class SMS
 {
-	private static $username;
+    private static $username;
+    private static $sender_id;
 	private static $password;
 	private static $mobile_number;
 	private static $message;
