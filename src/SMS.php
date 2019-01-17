@@ -1,0 +1,74 @@
+<?php 
+namespace OneWaySMS;
+class SMS
+{
+	private static $username;
+	private static $password;
+	private static $mobile_number;
+	private static $message;
+	private static $_instance = null;
+
+	protected static $error_codes = [
+        '-100' => 'apipassname or apipassword is invalid',
+        '-200' => 'senderid parameter is invalid',
+        '-300' => 'mobile parameter is invalid',
+        '-400' => 'languagetype is invalid',
+        '-500' => 'Invalid characters in message',
+        '-600' => 'Insufficient credit balance'
+    ];
+
+    protected static $transaction_codes = [
+        '0' => 'SMS received on mobile handset',
+        '100' => 'Message delivered to Telco',
+        '-100' => 'MTID invalid / not found',
+        '-200' => 'SMS failed to send',
+    ];
+
+	public static function make(array $details = [])
+    {
+    	static::$username = $details['username'];
+    	static::$password = $details['password'];
+        if (self::$_instance === null) {
+            self::$_instance = new self;
+        }
+
+        return self::$_instance;
+    }
+
+	private function __construct () { }
+
+    public static function to($var){
+        static::$mobile_number = $var;
+        return new static;      
+    }
+
+    public static function message($var){
+        static::$message = $var;
+        return new static;      
+    }
+
+    public static function send(){
+
+    	$url = "http://gateway.onewaysms.com.my:10001/";  
+        $url .= "api.aspx?apiusername=".static::$username."&apipassword=".static::$password;
+        $url .= "&senderid=".rawurlencode('1');   
+        $url .= "&mobileno=".rawurlencode(static::$mobile_number);
+        $url .= "&message=".rawurlencode(stripslashes(static::$message)) . "&languagetype=1";    
+        $result = implode ('', file ($url)); 
+
+        return [
+            'message'   => isset(static::$error_codes[$result]) ? static::$error_codes[$result] : $result,
+        ];
+
+    	echo "Message has been sent to ".static::$mobile_number." with message: ".static::$message; 
+    }
+
+    public static function status($mt_id) {
+        $url = "http://gateway.onewaysms.com.my:10001/";  
+        $url .= "bulktrx.aspx";
+        $url .= "?mtid=".rawurlencode($mt_id);      
+        $result = implode ('', file ($url)); 
+
+        return static::$transaction_codes[$result];
+    }
+}
