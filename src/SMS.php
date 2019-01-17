@@ -1,5 +1,8 @@
-<?php 
+<?php
+
 namespace OneWaySMS;
+use OneWaySMS\SmsHistory;
+
 class SMS
 {
 	private static $username;
@@ -39,35 +42,48 @@ class SMS
 
     public static function to($var){
         static::$mobile_number = $var;
-        return new static;      
+        return new static;
     }
 
     public static function message($var){
         static::$message = $var;
-        return new static;      
+        return new static;
     }
 
     public static function send(){
-
-    	$url = "http://gateway.onewaysms.com.my:10001/";  
+    	$url = "http://gateway.onewaysms.com.my:10001/";
         $url .= "api.aspx?apiusername=".static::$username."&apipassword=".static::$password;
-        $url .= "&senderid=".rawurlencode('1');   
+        $url .= "&senderid=".rawurlencode('1');
         $url .= "&mobileno=".rawurlencode(static::$mobile_number);
-        $url .= "&message=".rawurlencode(stripslashes(static::$message)) . "&languagetype=1";    
-        $result = implode ('', file ($url)); 
+        $url .= "&message=".rawurlencode(stripslashes(static::$message)) . "&languagetype=1";
+        $result = implode ('', file ($url));
+
+        if (isset(static::$error_codes[$result])) {
+            $mtid = NULL;
+            $response_code = $result;
+        } else {
+            $mtid = $result;
+            $response_code = $result;
+            // @Todo: update response code (queue?)
+        }
+
+        $sms = SmsHistory::create([
+            'message' => static::$message,
+            'mobile_number' => static::$mobile_number,
+            'mtid' => $mtid,
+            'response_code' => $result,
+        ]);
 
         return [
             'message'   => isset(static::$error_codes[$result]) ? static::$error_codes[$result] : $result,
         ];
-
-    	echo "Message has been sent to ".static::$mobile_number." with message: ".static::$message; 
     }
 
     public static function status($mt_id) {
-        $url = "http://gateway.onewaysms.com.my:10001/";  
+        $url = "http://gateway.onewaysms.com.my:10001/";
         $url .= "bulktrx.aspx";
-        $url .= "?mtid=".rawurlencode($mt_id);      
-        $result = implode ('', file ($url)); 
+        $url .= "?mtid=".rawurlencode($mt_id);
+        $result = implode ('', file ($url));
 
         return static::$transaction_codes[$result];
     }
