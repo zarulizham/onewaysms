@@ -1,5 +1,5 @@
 <?php
-namespace Zarulizham\OneWaySMS;
+namespace OneWaySMS;
 class Account
 {
 	private static $username;

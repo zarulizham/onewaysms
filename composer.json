@@ -9,10 +9,10 @@
             "email": "zarul.izham@gmail.com"
         }
     ],
-    
+
     "autoload": {
-        "psr-0": {
-            "OneWaySMS": "src/"
+        "psr-4": {
+            "OneWaySMS\\": "src"
         }
     },
     "require": {

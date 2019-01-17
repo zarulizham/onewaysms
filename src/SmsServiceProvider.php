@@ -1,5 +1,5 @@
 <?php
-namespace Zarulizham\OneWaySMS;
+namespace OneWaySMS;
 use Illuminate\Support\ServiceProvider;
 
 class SmsServiceProvider extends ServiceProvider
