@@ -28,9 +28,17 @@ class Account
         return self::$_instance;
     }
 
-	private function __construct () { }
+	public function __construct() { }
 
-    public static function balance(){
+    public static function checkCredential() {
+        if (!static::$username || !static::$password) {
+            static::$username = getenv('ONEWAY_USERNAME');
+            static::$password = getenv('ONEWAY_PASSWORD');
+        }
+    }
+
+    public static function balance() {
+        self::checkCredential();
     	$query_string = "bulkcredit.aspx?apiusername=".static::$username."&apipassword=".static::$password;
         $url = "http://gateway.onewaysms.com.my:10001/".$query_string;
         $response = implode ('', file ($url));

@@ -51,7 +51,16 @@ class SMS
         return new static;
     }
 
+    public static function checkCredential() {
+        if (!static::$username || !static::$password) {
+            static::$username = getenv('ONEWAY_USERNAME');
+            static::$password = getenv('ONEWAY_PASSWORD');
+        }
+    }
+
     public static function send(){
+        self::checkCredential();
+
     	$url = "http://gateway.onewaysms.com.my:10001/";
         $url .= "api.aspx?apiusername=".static::$username."&apipassword=".static::$password;
         $url .= "&senderid=".rawurlencode('1');
