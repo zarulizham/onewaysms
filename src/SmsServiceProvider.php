@@ -11,7 +11,6 @@ class SmsServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        include __DIR__.'/routes.php';
         $this->loadMigrationsFrom(__DIR__.'/database/migrations');
     }
 
